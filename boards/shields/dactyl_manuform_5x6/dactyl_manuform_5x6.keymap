@@ -6,7 +6,6 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
-#include <dt-bindings/zmk/rgb.h>
 
 / {
     keymap {
@@ -38,46 +37,46 @@
         lower_layer {
             // -----------------------------------------------------------------------------------------
             // |  ~   | !   | @   |  #  |  $  |  %  |            | F20 | F21 |  *  |  (  |  )  | DEL  |
-            // |      |RGBHU|RGBSA|     |     |  [  |            |  ]  |  7  |  UP |  9  |     |  +   |
-            // |      |RGBHD|RGBSD|     |     |  (  |            |  )  | LFT | DWN | RGT |  -  |  '   |
-            // |      |     |     |     |RGBMD|BOOT |            |BOOT |RGBMD|  2  |  3  |  =  |  _   |
+            // |      |     |     |     |     |  [  |            |  ]  |  7  |  UP |  9  |     |  +   |
+            // |      |     |     |     |     |  (  |            |  )  | LFT | DWN | RGT |  -  |  '   |
+            // |      |     |     |     |     |BOOT |            |BOOT |     |  2  |  3  |  =  |  _   |
             //                    |     |PSCR |                                    |     |  0  |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
 
             bindings = <
-            &kp TILDE  &kp EXCL      &kp AT          &kp HASH  &kp DLLR         &kp PRCNT                       &kp F20           &kp F21           &kp ASTRK  &kp LPAR   &kp RPAR  &kp DEL
-            &trans     &rgb_ug RGB_HUI &rgb_ug RGB_SAI &trans    &trans           &kp LBKT                        &kp RBKT          &kp N7            &kp UP     &kp N9     &trans    &kp PLUS
-            &trans     &rgb_ug RGB_HUD &rgb_ug RGB_SAD &trans    &trans           &kp LPAR                        &kp RPAR          &kp LEFT          &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
-            &trans     &trans        &trans        &trans    &rgb_ug RGB_EFF  &bootloader                     &bootloader       &rgb_ug RGB_EFF   &kp N2     &kp N3     &kp EQUAL &kp UNDER
-                                                   &trans    &kp PSCRN                                                                            &trans     &kp N0
-                                                             &trans           &trans                          &trans            &trans
-                                                             &trans           &trans                          &trans            &trans
-                                                             &trans           &trans                          &trans            &trans
+            &kp TILDE  &kp EXCL  &kp AT    &kp HASH  &kp DLLR  &kp PRCNT                       &kp F20      &kp F21   &kp ASTRK  &kp LPAR   &kp RPAR  &kp DEL
+            &trans     &trans    &trans    &trans    &trans    &kp LBKT                        &kp RBKT     &kp N7    &kp UP     &kp N9     &trans    &kp PLUS
+            &trans     &trans    &trans    &trans    &trans    &kp LPAR                        &kp RPAR     &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
+            &trans     &trans    &trans    &trans    &trans    &bootloader                     &bootloader  &trans    &kp N2     &kp N3     &kp EQUAL &kp UNDER
+                                           &trans    &kp PSCRN                                                        &trans     &kp N0
+                                                     &trans    &trans                          &trans       &trans
+                                                     &trans    &trans                          &trans       &trans
+                                                     &trans    &trans                          &trans       &trans
             >;
         };
 
         raise_layer {
             // -----------------------------------------------------------------------------------------
             // | F12  | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
-            // |      |     |     |     |     |  [  |            |RGBVI|     | NUM | INS |SCRL |VOL_UP|
-            // |      |     |     |     |     |  (  |            |RGBVD|PREV |PLAY |NEXT |     |VOL_DN|
-            // |      |     |     |  ñ  |RGBMD|BOOT |            |BOOT |     |     |     |     |      |
+            // |      |     |     |     |     |  [  |            |     |     | NUM | INS |SCRL |VOL_UP|
+            // |      |     |     |     |     |  (  |            |     |PREV |PLAY |NEXT |     |VOL_DN|
+            // |      |     |     |  ñ  |     |BOOT |            |BOOT |     |     |     |     |      |
             //                    |     |PSCR |                                    |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |PG_UP|PG_DN|
 
             bindings = <
-            &kp F12  &kp F1  &kp F2  &kp F3         &kp F4           &kp F5                              &kp F6           &kp F7     &kp F8     &kp F9     &kp F10  &kp F11
-            &trans   &trans  &trans  &trans         &trans           &kp LBKT                            &rgb_ug RGB_BRI  &trans     &kp KP_NUM &kp INS    &kp SLCK &kp C_VOL_UP
-            &trans   &trans  &trans  &trans         &trans           &kp LPAR                            &rgb_ug RGB_BRD  &kp C_PREV &kp C_PP   &kp C_NEXT &trans   &kp C_VOL_DN
-            &trans   &trans  &trans  &kp RA(COMMA)  &rgb_ug RGB_EFF  &bootloader                         &bootloader      &trans     &trans     &trans     &trans   &trans
-                                     &trans         &kp PSCRN                                                                        &trans     &trans
-                                                    &trans           &trans                              &trans           &trans
-                                                    &trans           &trans                              &trans           &trans
-                                                    &trans           &trans                              &kp PG_UP        &kp PG_DN
+            &kp F12  &kp F1  &kp F2  &kp F3         &kp F4   &kp F5                              &kp F6       &kp F7     &kp F8     &kp F9     &kp F10  &kp F11
+            &trans   &trans  &trans  &trans         &trans   &kp LBKT                            &trans       &trans     &kp KP_NUM &kp INS    &kp SLCK &kp C_VOL_UP
+            &trans   &trans  &trans  &trans         &trans   &kp LPAR                            &trans       &kp C_PREV &kp C_PP   &kp C_NEXT &trans   &kp C_VOL_DN
+            &trans   &trans  &trans  &kp RA(COMMA)  &trans   &bootloader                         &bootloader  &trans     &trans     &trans     &trans   &trans
+                                     &trans         &kp PSCRN                                                            &trans     &trans
+                                                    &trans   &trans                              &trans       &trans
+                                                    &trans   &trans                              &trans       &trans
+                                                    &trans   &trans                              &kp PG_UP    &kp PG_DN
             >;
         };
     };
