@@ -60,6 +60,8 @@
     };
 };
 
+// Disable I2C to prevent conflict with D3 (gpio0.17) used for Row 4
+// D3 is normally reserved for I2C SDA, but we need it for matrix scanning
 &i2c0 {
     status = "disabled";
 };
