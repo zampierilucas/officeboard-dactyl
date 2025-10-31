@@ -16,7 +16,12 @@
         columns = <12>;
         rows = <6>;
 
-        // Right side matrix (columns 6-11)
+        // CRITICAL: col-offset adds 6 to all column coordinates
+        // Physical (0,0) becomes RC(0,6) when sent to dongle
+        col-offset = <6>;
+
+        // Right side - same map as left/dongle but with col-offset
+        // Physical cols 0,1,2,3,4,5 become 6,7,8,9,10,11 after col-offset applied
         map = <
         RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4) RC(0,5)  RC(0,6) RC(0,7) RC(0,8) RC(0,9) RC(0,10) RC(0,11)
         RC(1,0) RC(1,1) RC(1,2) RC(1,3) RC(1,4) RC(1,5)  RC(1,6) RC(1,7) RC(1,8) RC(1,9) RC(1,10) RC(1,11)
@@ -36,21 +41,25 @@
         diode-direction = "col2row";
 
         row-gpios
-            = <&pro_micro 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // F6
-            , <&pro_micro 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // F7
-            , <&pro_micro 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)> // B1
-            , <&pro_micro 14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)> // B3
-            , <&pro_micro 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)> // B2
-            , <&pro_micro 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)> // B6
+            = <&pro_micro 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // D8 - Row 0 (6,7,8,9,0,BSPC row)
+            , <&pro_micro 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // D2 - Row 1 (Y,U,I,O,P,- row)
+            , <&pro_micro 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // D4 - Row 2 (H,J,K,L,;,á row)
+            , <&pro_micro 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // D5 - Row 3 (N,M,,,.,/,\ row)
+            , <&pro_micro 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // D3 - Row 4 (thumb cluster +,=,ENTER,LOWER)
+            , <&pro_micro 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  // D9 - Row 5 (thumb cluster)
             ;
 
         col-gpios
-            = <&pro_micro 6 GPIO_ACTIVE_HIGH>  // D4
-            , <&pro_micro 7 GPIO_ACTIVE_HIGH>  // C6
-            , <&pro_micro 8 GPIO_ACTIVE_HIGH>  // D7
-            , <&pro_micro 9 GPIO_ACTIVE_HIGH>  // E6
-            , <&pro_micro 18 GPIO_ACTIVE_HIGH> // B4
-            , <&pro_micro 19 GPIO_ACTIVE_HIGH> // B5
+            = <&pro_micro 19 GPIO_ACTIVE_HIGH> // D19 - Col 0
+            , <&pro_micro 18 GPIO_ACTIVE_HIGH> // D18 - Col 1
+            , <&pro_micro 15 GPIO_ACTIVE_HIGH> // D15 - Col 2
+            , <&pro_micro 14 GPIO_ACTIVE_HIGH> // D14 - Col 3
+            , <&pro_micro 16 GPIO_ACTIVE_HIGH> // D16 - Col 4
+            , <&pro_micro 10 GPIO_ACTIVE_HIGH> // D10 - Col 5
             ;
     };
+};
+
+&i2c0 {
+    status = "disabled";
 };
