@@ -7,7 +7,15 @@
 
 / {
     chosen {
+        zmk,kscan = &mock_kscan;
         zmk,matrix-transform = &default_transform;
+    };
+
+    mock_kscan: mock_kscan_0 {
+        compatible = "zmk,kscan-mock";
+        columns = <0>;
+        rows = <0>;
+        events = <0>;
     };
 
     default_transform: keymap_transform_0 {
