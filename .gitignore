@@ -1,0 +1,8 @@
+zmk/
+build/
+.zmk/
+.zmk-workspace/
+.vscode/
+boards/zephyr/
+mount/
+*.sh
