@@ -20,6 +20,14 @@ ZMK_WORKSPACE="${WORKSPACE_DIR}/.zmk-workspace"
 ZMK_VERSION="v0.2.1"
 ZMK_REPO="https://github.com/zmkfirmware/zmk.git"
 ZMK_BRANCH="$ZMK_VERSION"
+
+# Override with PR #2938 for HID battery reporting (default: enabled)
+if [ "${USE_HID_BATTERY:-true}" = "true" ]; then
+    ZMK_REPO="https://github.com/Genteure/zmk.git"
+    ZMK_BRANCH="feat/battery-reporting"
+    echo -e "${YELLOW}Using PR #2938 branch for USB HID battery reporting${NC}"
+fi
+
 BOARD="nice_nano_v2"
 PRISTINE="${PRISTINE:-false}"  # Set PRISTINE=true for clean builds
 PARALLEL="${PARALLEL:-true}"   # Set PARALLEL=false for sequential builds
@@ -158,4 +166,8 @@ echo ""
 echo -e "${YELLOW}Tips:${NC}"
 echo "  - For clean build: PRISTINE=true ./build-local.sh"
 echo "  - For sequential build: PARALLEL=false ./build-local.sh"
+<<<<<<< HEAD
+=======
+echo "  - Disable HID battery: USE_HID_BATTERY=false ./build-local.sh"
+>>>>>>> a9cdde5 (Add build and flash scripts for ZMK firmware)
 echo "  - To clean workspace: rm -rf .zmk-workspace"
