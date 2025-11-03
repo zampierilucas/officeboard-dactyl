@@ -39,6 +39,11 @@ SHIELDS=("dactyl_manuform_5x6_left" "dactyl_manuform_5x6_right" "dactyl_manuform
 mkdir -p "$BUILD_DIR"
 mkdir -p "$ZMK_WORKSPACE"
 
+# Always clean build directory to ensure fresh builds
+echo -e "${YELLOW}Cleaning previous build artifacts...${NC}"
+rm -f "$BUILD_DIR"/*.uf2
+echo -e "${GREEN}✓ Build directory cleaned${NC}"
+
 # Check if ZMK workspace exists and is valid
 if [ ! -d "$ZMK_WORKSPACE/zmk/.git" ]; then
     echo -e "${BLUE}Initializing ZMK workspace (first run)...${NC}"
@@ -166,8 +171,5 @@ echo ""
 echo -e "${YELLOW}Tips:${NC}"
 echo "  - For clean build: PRISTINE=true ./build-local.sh"
 echo "  - For sequential build: PARALLEL=false ./build-local.sh"
-<<<<<<< HEAD
-=======
 echo "  - Disable HID battery: USE_HID_BATTERY=false ./build-local.sh"
->>>>>>> a9cdde5 (Add build and flash scripts for ZMK firmware)
 echo "  - To clean workspace: rm -rf .zmk-workspace"
