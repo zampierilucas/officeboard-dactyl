@@ -21,11 +21,18 @@ ZMK_VERSION="v0.2.1"
 ZMK_REPO="https://github.com/zmkfirmware/zmk.git"
 ZMK_BRANCH="$ZMK_VERSION"
 
-# Override with PR #2938 for HID battery reporting (default: enabled)
+# Override with HID battery reporting (default: enabled)
 if [ "${USE_HID_BATTERY:-true}" = "true" ]; then
-    ZMK_REPO="https://github.com/Genteure/zmk.git"
-    ZMK_BRANCH="feat/battery-reporting"
-    echo -e "${YELLOW}Using PR #2938 branch for USB HID battery reporting${NC}"
+    # Choose between Genteure's fork (default) and personal fork
+    if [ "${USE_PERSONAL_FORK:-false}" = "true" ]; then
+        ZMK_REPO="https://github.com/zampierilucas/zmk.git"
+        ZMK_BRANCH="feat/individual-hid-battery-reporting"
+        echo -e "${YELLOW}Using personal fork for individual HID battery reporting${NC}"
+    else
+        ZMK_REPO="https://github.com/Genteure/zmk.git"
+        ZMK_BRANCH="feat/battery-reporting"
+        echo -e "${YELLOW}Using PR #2938 branch for USB HID battery reporting${NC}"
+    fi
 fi
 
 BOARD="nice_nano_v2"
@@ -172,4 +179,5 @@ echo -e "${YELLOW}Tips:${NC}"
 echo "  - For clean build: PRISTINE=true ./build-local.sh"
 echo "  - For sequential build: PARALLEL=false ./build-local.sh"
 echo "  - Disable HID battery: USE_HID_BATTERY=false ./build-local.sh"
+echo "  - Use personal fork: USE_PERSONAL_FORK=true ./build-local.sh"
 echo "  - To clean workspace: rm -rf .zmk-workspace"
