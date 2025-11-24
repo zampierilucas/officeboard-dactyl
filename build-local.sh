@@ -47,15 +47,26 @@ else
     fi
 fi
 
-BOARD="nice_nano_v2"
 PRISTINE="${PRISTINE:-false}"  # Set PRISTINE=true for clean builds
 PARALLEL="${PARALLEL:-true}"   # Set PARALLEL=false for sequential builds
 
-# Shields to build
-SHIELDS=("dactyl_manuform_5x6_left" "dactyl_manuform_5x6_right" "dactyl_manuform_5x6_dongle")
+# Build separate logging-only dongle (disabled by default since main build has logging+studio)
+BUILD_DONGLE_LOGGING="${BUILD_DONGLE_LOGGING:-false}"
 
-# Always build dongle with logging for debugging
-BUILD_DONGLE_LOGGING="${BUILD_DONGLE_LOGGING:-true}"
+# Read build configuration from build.yaml
+BUILD_YAML="${WORKSPACE_DIR}/build.yaml"
+if [ ! -f "$BUILD_YAML" ]; then
+    echo -e "${RED}Error: build.yaml not found at ${BUILD_YAML}${NC}"
+    exit 1
+fi
+
+echo -e "${BLUE}Reading build configuration from build.yaml...${NC}"
+
+# Parse build.yaml and extract build configurations
+BUILD_CONFIGS=()
+while IFS= read -r line; do
+    BUILD_CONFIGS+=("$line")
+done < <(yq e '.include[] | @json' "$BUILD_YAML")
 
 # Create directories
 mkdir -p "$BUILD_DIR"
@@ -118,23 +129,104 @@ else
     echo ""
 fi
 
-# Function to build a single shield
-build_shield() {
-    local SHIELD=$1
-    local LOGGING_SUFFIX=$2
-    local LOGGING_FLAG=$3
-    local OUTPUT_FILE="$BUILD_DIR/${SHIELD}-${BOARD}-zmk${LOGGING_SUFFIX}.uf2"
+# Function to build from a build.yaml config
+build_from_config() {
+    local CONFIG_JSON=$1
+    local BOARD=$(echo "$CONFIG_JSON" | jq -r '.board')
+    local SHIELD=$(echo "$CONFIG_JSON" | jq -r '.shield')
+    local SNIPPET=$(echo "$CONFIG_JSON" | jq -r '.snippet // empty')
+    local CMAKE_ARGS=$(echo "$CONFIG_JSON" | jq -r '."cmake-args" // empty')
+    local ARTIFACT_NAME=$(echo "$CONFIG_JSON" | jq -r '."artifact-name" // empty')
+
+    local BUILD_SUFFIX=""
+    local OUTPUT_NAME="${SHIELD}-${BOARD}-zmk"
+
+    if [ -n "$ARTIFACT_NAME" ]; then
+        OUTPUT_NAME="$ARTIFACT_NAME"
+        BUILD_SUFFIX="-${ARTIFACT_NAME}"
+    fi
+
+    local OUTPUT_FILE="$BUILD_DIR/${OUTPUT_NAME}.uf2"
     local PRISTINE_FLAG=""
 
     if [ "$PRISTINE" = "true" ]; then
         PRISTINE_FLAG="-p"
     fi
 
-    if [ -n "$LOGGING_SUFFIX" ]; then
-        echo -e "${BLUE}Building: ${SHIELD} (with logging)${NC}"
-    else
-        echo -e "${BLUE}Building: ${SHIELD}${NC}"
+    echo -e "${BLUE}Building: ${SHIELD} on ${BOARD}${NC}"
+    if [ -n "$SNIPPET" ]; then
+        echo -e "${YELLOW}  Snippet: ${SNIPPET}${NC}"
     fi
+    if [ -n "$CMAKE_ARGS" ]; then
+        echo -e "${YELLOW}  CMake args: ${CMAKE_ARGS}${NC}"
+    fi
+
+    # Determine ZMK source mount based on USE_LOCAL_ZMK
+    if [ "$USE_LOCAL_ZMK" = "true" ]; then
+        ZMK_MOUNT="-v $LOCAL_ZMK_PATH:/zmk"
+        WORK_DIR="/zmk"
+    else
+        ZMK_MOUNT="-v $ZMK_WORKSPACE:/workspace"
+        WORK_DIR="/workspace/zmk"
+    fi
+
+    # Construct build command
+    local SNIPPET_ARG=""
+    if [ -n "$SNIPPET" ]; then
+        SNIPPET_ARG="-S $SNIPPET"
+    fi
+
+    # Run build in Docker
+    docker run --rm \
+        -v "$WORKSPACE_DIR:/project" \
+        $ZMK_MOUNT \
+        -w $WORK_DIR \
+        zmkfirmware/zmk-build-arm:stable \
+        bash -c "
+            set -e
+
+            # Copy custom shield to ZMK's boards directory (required for shield discovery)
+            mkdir -p app/boards/shields/dactyl_manuform_5x6
+            cp -r /project/boards/shields/dactyl_manuform_5x6/* app/boards/shields/dactyl_manuform_5x6/
+
+            # Check if build directory has stale absolute paths and clean if needed
+            if [ -d app/build-${SHIELD}${BUILD_SUFFIX}/CMakeCache.txt ] && [ -z \"$PRISTINE_FLAG\" ]; then
+                if grep -q '/.zmk-workspace/' app/build-${SHIELD}${BUILD_SUFFIX}/CMakeCache.txt 2>/dev/null; then
+                    echo \"Cleaning stale build cache with old paths...\"
+                    rm -rf app/build-${SHIELD}${BUILD_SUFFIX}
+                fi
+            fi
+
+            # Build the firmware
+            cd app
+            west build $PRISTINE_FLAG -b $BOARD -d build-${SHIELD}${BUILD_SUFFIX} $SNIPPET_ARG -o=--quiet -- \
+                -DSHIELD=$SHIELD $CMAKE_ARGS 2>&1
+
+            # Copy output to host
+            cp build-${SHIELD}${BUILD_SUFFIX}/zephyr/zmk.uf2 /project/build/${OUTPUT_NAME}.uf2
+        "
+
+    if [ -f "$OUTPUT_FILE" ]; then
+        SIZE=$(stat -c%s "$OUTPUT_FILE" 2>/dev/null || stat -f%z "$OUTPUT_FILE" 2>/dev/null)
+        echo -e "${GREEN}✓ Built: ${OUTPUT_NAME}.uf2${NC} (${SIZE} bytes)"
+    else
+        echo -e "${RED}✗ Failed to build: ${OUTPUT_NAME}${NC}"
+        return 1
+    fi
+}
+
+# Legacy function for logging builds
+build_shield_logging() {
+    local SHIELD=$1
+    local BOARD=$2
+    local OUTPUT_FILE="$BUILD_DIR/${SHIELD}-${BOARD}-zmk-logging.uf2"
+    local PRISTINE_FLAG=""
+
+    if [ "$PRISTINE" = "true" ]; then
+        PRISTINE_FLAG="-p"
+    fi
+
+    echo -e "${BLUE}Building: ${SHIELD} (with logging)${NC}"
 
     # Determine ZMK source mount based on USE_LOCAL_ZMK
     if [ "$USE_LOCAL_ZMK" = "true" ]; then
@@ -158,56 +250,43 @@ build_shield() {
             mkdir -p app/boards/shields/dactyl_manuform_5x6
             cp -r /project/boards/shields/dactyl_manuform_5x6/* app/boards/shields/dactyl_manuform_5x6/
 
-            # Check if build directory has stale absolute paths and clean if needed
-            if [ -d app/build-$SHIELD$LOGGING_SUFFIX/CMakeCache.txt ] && [ -z \"$PRISTINE_FLAG\" ]; then
-                if grep -q '/.zmk-workspace/' app/build-$SHIELD$LOGGING_SUFFIX/CMakeCache.txt 2>/dev/null; then
-                    echo \"Cleaning stale build cache with old paths...\"
-                    rm -rf app/build-$SHIELD$LOGGING_SUFFIX
-                fi
-            fi
-
             # Build the firmware
             cd app
-            if [ -n \"$LOGGING_FLAG\" ]; then
-                # Use zmk-usb-logging snippet for logging builds
-                west build $PRISTINE_FLAG -b $BOARD -d build-$SHIELD$LOGGING_SUFFIX -S zmk-usb-logging -- \
-                    -DSHIELD=$SHIELD 2>&1
-            else
-                west build $PRISTINE_FLAG -b $BOARD -d build-$SHIELD$LOGGING_SUFFIX -- \
-                    -DSHIELD=$SHIELD 2>&1
-            fi
+            west build $PRISTINE_FLAG -b $BOARD -d build-${SHIELD}-logging -S zmk-usb-logging -o=--quiet -- \
+                -DSHIELD=$SHIELD 2>&1
 
             # Copy output to host
-            cp build-$SHIELD$LOGGING_SUFFIX/zephyr/zmk.uf2 /project/build/${SHIELD}-${BOARD}-zmk$LOGGING_SUFFIX.uf2
-        " 2>&1 | grep -v "^Cloning\|^remote:\|^Receiving\|^Resolving" || true
+            cp build-${SHIELD}-logging/zephyr/zmk.uf2 /project/build/${SHIELD}-${BOARD}-zmk-logging.uf2
+        "
 
     if [ -f "$OUTPUT_FILE" ]; then
         SIZE=$(stat -c%s "$OUTPUT_FILE" 2>/dev/null || stat -f%z "$OUTPUT_FILE" 2>/dev/null)
-        echo -e "${GREEN}✓ Built: ${SHIELD}${NC} (${SIZE} bytes)"
+        echo -e "${GREEN}✓ Built: ${SHIELD}-logging${NC} (${SIZE} bytes)"
     else
-        echo -e "${RED}✗ Failed to build: ${SHIELD}${NC}"
+        echo -e "${RED}✗ Failed to build: ${SHIELD}-logging${NC}"
         return 1
     fi
 }
 
-# Build shields
+# Build from build.yaml configurations
 if [ "$PARALLEL" = "true" ]; then
-    echo -e "${YELLOW}Building all shields in parallel...${NC}"
+    echo -e "${YELLOW}Building all configurations in parallel...${NC}"
     echo ""
 
     # Start all builds in background
     PIDS=()
     BUILD_NAMES=()
 
-    for SHIELD in "${SHIELDS[@]}"; do
-        build_shield "$SHIELD" "" "" &
+    for config in "${BUILD_CONFIGS[@]}"; do
+        build_from_config "$config" &
         PIDS+=($!)
+        SHIELD=$(echo "$config" | jq -r '.shield')
         BUILD_NAMES+=("$SHIELD")
     done
 
     # Build logging-enabled dongle if enabled
     if [ "$BUILD_DONGLE_LOGGING" = "true" ]; then
-        build_shield "dactyl_manuform_5x6_dongle" "-logging" "LOGGING" &
+        build_shield_logging "dactyl_manuform_5x6_dongle" "nice_nano_v2" &
         PIDS+=($!)
         BUILD_NAMES+=("dactyl_manuform_5x6_dongle-logging")
     fi
@@ -225,17 +304,17 @@ if [ "$PARALLEL" = "true" ]; then
         exit 1
     fi
 else
-    echo -e "${YELLOW}Building shields sequentially...${NC}"
+    echo -e "${YELLOW}Building configurations sequentially...${NC}"
     echo ""
 
-    for SHIELD in "${SHIELDS[@]}"; do
-        build_shield "$SHIELD" "" ""
+    for config in "${BUILD_CONFIGS[@]}"; do
+        build_from_config "$config"
         echo ""
     done
 
     # Build logging-enabled dongle if enabled
     if [ "$BUILD_DONGLE_LOGGING" = "true" ]; then
-        build_shield "dactyl_manuform_5x6_dongle" "-logging" "LOGGING"
+        build_shield_logging "dactyl_manuform_5x6_dongle" "nice_nano_v2"
         echo ""
     fi
 fi
@@ -253,14 +332,22 @@ echo -e "${YELLOW}To flash:${NC}"
 echo "1. Put your board into bootloader mode (double-tap reset)"
 echo "2. Copy the .uf2 file to the mounted USB drive"
 echo ""
-echo "Flash in this order:"
-echo "  1. Dongle:     $BUILD_DIR/dactyl_manuform_5x6_dongle-${BOARD}-zmk.uf2"
-echo "  2. Left half:  $BUILD_DIR/dactyl_manuform_5x6_left-${BOARD}-zmk.uf2"
-echo "  3. Right half: $BUILD_DIR/dactyl_manuform_5x6_right-${BOARD}-zmk.uf2"
+echo "Built firmware files:"
+for config in "${BUILD_CONFIGS[@]}"; do
+    SHIELD=$(echo "$config" | jq -r '.shield')
+    BOARD=$(echo "$config" | jq -r '.board')
+    ARTIFACT_NAME=$(echo "$config" | jq -r '."artifact-name" // empty')
+    if [ -n "$ARTIFACT_NAME" ]; then
+        OUTPUT_NAME="$ARTIFACT_NAME"
+    else
+        OUTPUT_NAME="${SHIELD}-${BOARD}-zmk"
+    fi
+    echo "  - ${SHIELD}: $BUILD_DIR/${OUTPUT_NAME}.uf2"
+done
 echo ""
 if [ "$BUILD_DONGLE_LOGGING" = "true" ]; then
     echo -e "${BLUE}Debug version (with USB logging):${NC}"
-    echo "  - Dongle:      $BUILD_DIR/dactyl_manuform_5x6_dongle-${BOARD}-zmk-logging.uf2"
+    echo "  - Dongle:      $BUILD_DIR/dactyl_manuform_5x6_dongle-nice_nano_v2-zmk-logging.uf2"
     echo ""
 fi
 echo -e "${YELLOW}Tips:${NC}"

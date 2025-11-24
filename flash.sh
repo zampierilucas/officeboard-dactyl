@@ -25,8 +25,11 @@ MOUNT_POINT="/tmp/zmk_flash_$$"
 
 # Validate target and determine firmware filename
 case $TARGET in
-    left|right|dongle)
+    left|right)
         FIRMWARE="build/dactyl_manuform_5x6_${TARGET}-nice_nano_v2-zmk.uf2"
+        ;;
+    dongle)
+        FIRMWARE="build/dactyl_manuform_5x6_dongle_studio.uf2"
         ;;
     dongle-log)
         FIRMWARE="build/dactyl_manuform_5x6_dongle-nice_nano_v2-zmk-logging.uf2"
