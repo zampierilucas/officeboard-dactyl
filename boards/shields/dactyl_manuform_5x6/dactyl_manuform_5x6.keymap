@@ -38,22 +38,22 @@
         lower {
             display-name = "Lower";
             // -----------------------------------------------------------------------------------------
-            // |  ~   | !   | @   |  #  |  $  |  %  |            | F20 | F21 |  *  |  (  |  )  | DEL  |
-            // |      |     |     |     |     |  [  |            |  ]  |  7  |  UP |  9  |     |  +   |
-            // |      |     |     |     |     |  (  |            |  )  | LFT | DWN | RGT |  -  |  '   |
-            // |      |     |     |     |     |STUL* |            |BOOT |     |  2  |  3  |  =  |  _   |
-            //                    |     |PSCR |                                    |     |  0  |
+            // |  ~   |     |     |     |     |     |            | F20 | F21 |     |     |     | DEL  |
+            // |      |     |     |     |     |     |            |     |     |  UP |     |     |  +   |
+            // |      |     |     |     |     |     |            |     | LFT | DWN | RGT |  -  |  '   |
+            // |      |     |     |     |     |STUL* |            |BOOT |     |     |     |  =  |  _   |
+            //                    |     |PSCR |                                    |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             // *STUL = Studio Unlock (dongle only), BOOT = Bootloader (left/right)
 
             bindings = <
-            &kp GRAVE  &kp EXCL  &kp AT    &kp HASH  &kp DLLR  &kp PRCNT                       &kp F20         &kp F21   &kp ASTRK  &kp LPAR   &kp RPAR  &kp DEL
-            &trans     &trans    &trans    &trans    &trans    &kp LBKT                        &kp RBKT        &kp N7    &kp UP     &kp N9     &trans    &kp PLUS
-            &trans     &trans    &trans    &trans    &trans    &kp LPAR                        &kp RPAR        &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
-            &trans     &trans    &trans    &trans    &trans    &studio_unlock                  &bootloader     &trans    &kp N2     &kp N3     &kp EQUAL &kp UNDER
-                                           &trans    &kp PSCRN                                                            &trans     &kp N0
+            &kp GRAVE  &trans    &trans    &trans    &trans    &trans                          &kp F20         &kp F21   &trans     &trans     &trans    &kp DEL
+            &trans     &trans    &trans    &trans    &trans    &trans                          &trans          &trans    &kp UP     &trans     &trans    &kp PLUS
+            &trans     &trans    &trans    &trans    &trans    &trans                          &trans          &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
+            &trans     &trans    &trans    &trans    &trans    &studio_unlock                  &bootloader     &trans    &trans     &trans     &kp EQUAL &kp UNDER
+                                           &trans    &kp PSCRN                                                            &trans     &trans
                                                      &trans    &trans                                 &trans       &trans
                                                      &trans    &trans                                 &trans       &trans
                                                      &trans    &trans                                 &trans       &trans
@@ -64,8 +64,8 @@
             display-name = "Raise";
             // -----------------------------------------------------------------------------------------
             // | GRAVE  | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
-            // |      |     |     |     |     |  [  |            |     |     | NUM | INS |SCRL |VOL_UP|
-            // |      |     |     |     |     |  (  |            |     |PREV |PLAY |NEXT |     |VOL_DN|
+            // |      |     |     |     |     |     |            |     |     |     |     |     |VOL_UP|
+            // |      |     |     |     |     |     |            |     |PREV |PLAY |NEXT |     |VOL_DN|
             // |      |     |     |  ñ  |     |BOOT |            |BOOT |     |     |     |     |      |
             //                    |     |PSCR |                                    |     |     |
             //                          |     |     |            |     |     |
@@ -74,8 +74,8 @@
 
             bindings = <
             &kp GRAVE &kp F1  &kp F2  &kp F3         &kp F4   &kp F5                              &kp F6       &kp F7     &kp F8     &kp F9     &kp F10  &kp F11
-            &trans   &trans  &trans  &trans         &trans   &kp LBKT                            &trans       &trans     &kp KP_NUM &kp INS    &kp SLCK &kp C_VOL_UP
-            &trans   &trans  &trans  &trans         &trans   &kp LPAR                            &trans       &kp C_PREV &kp C_PP   &kp C_NEXT &trans   &kp C_VOL_DN
+            &trans   &trans  &trans  &trans         &trans   &trans                              &trans       &trans     &trans     &trans     &trans   &kp C_VOL_UP
+            &trans   &trans  &trans  &trans         &trans   &trans                              &trans       &kp C_PREV &kp C_PP   &kp C_NEXT &trans   &kp C_VOL_DN
             &trans   &trans  &trans  &kp RA(COMMA)  &trans   &bootloader                         &bootloader  &trans     &trans     &trans     &trans   &trans
                                      &trans         &kp PSCRN                                                            &trans     &trans
                                                     &trans   &trans                              &trans       &trans
