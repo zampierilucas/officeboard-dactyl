@@ -1,0 +1,6 @@
+/*
+ * Copyright (c) 2025 The ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "dactyl_manuform_5x6.keymap"
