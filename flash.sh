@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Flash script for Dactyl Manuform keyboard firmware
-# Usage: ./flash.sh [left|right|dongle]
+# Usage: ./flash.sh [left|right|dongle|dongle-log]
 
 set -e
 
@@ -14,27 +14,30 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 if [ $# -eq 0 ]; then
-    echo -e "${RED}Usage: $0 [left|right|dongle]${NC}"
+    echo -e "${RED}Usage: $0 [left|right|dongle|dongle-log]${NC}"
     echo -e "${CYAN}Example: $0 left${NC}"
+    echo -e "${CYAN}Example: $0 dongle-log  # Flash dongle with USB logging${NC}"
     exit 1
 fi
 
 TARGET=$1
 MOUNT_POINT="/tmp/zmk_flash_$$"
 
-# Validate target
+# Validate target and determine firmware filename
 case $TARGET in
     left|right|dongle)
+        FIRMWARE="build/dactyl_manuform_5x6_${TARGET}-nice_nano_v2-zmk.uf2"
+        ;;
+    dongle-log)
+        FIRMWARE="build/dactyl_manuform_5x6_dongle-nice_nano_v2-zmk-logging.uf2"
+        TARGET="dongle (with logging)"
         ;;
     *)
         echo -e "${RED}Error: Invalid target '$TARGET'${NC}"
-        echo -e "${YELLOW}Valid targets: left, right, dongle${NC}"
+        echo -e "${YELLOW}Valid targets: left, right, dongle, dongle-log${NC}"
         exit 1
         ;;
 esac
-
-# Determine firmware filename
-FIRMWARE="build/dactyl_manuform_5x6_${TARGET}-nice_nano_v2-zmk.uf2"
 
 # Check if firmware exists
 if [ ! -f "$FIRMWARE" ]; then
@@ -43,7 +46,7 @@ if [ ! -f "$FIRMWARE" ]; then
     exit 1
 fi
 
-echo -e "${BLUE}Preparing to flash $TARGET half...${NC}"
+echo -e "${BLUE}Preparing to flash $TARGET...${NC}"
 echo -e "${CYAN}Firmware: $FIRMWARE${NC}"
 echo ""
 
@@ -142,5 +145,16 @@ sudo umount "$MOUNT_POINT"
 rmdir "$MOUNT_POINT"
 
 echo ""
-echo -e "${GREEN}✓ Successfully flashed $TARGET half!${NC}"
+echo -e "${GREEN}✓ Successfully flashed $TARGET!${NC}"
 echo -e "${CYAN}The device should reboot automatically.${NC}"
+
+# Show logging instructions if this was a logging build
+if [[ "$FIRMWARE" == *"-logging.uf2" ]]; then
+    echo ""
+    echo -e "${YELLOW}USB Logging is enabled on this dongle firmware.${NC}"
+    echo -e "${CYAN}To view logs:${NC}"
+    echo -e "  ${BLUE}cat /dev/ttyACM0${NC}"
+    echo -e "  ${BLUE}tio /dev/ttyACM0${NC}"
+    echo -e "  ${BLUE}screen /dev/ttyACM0 115200${NC}"
+    echo ""
+fi
