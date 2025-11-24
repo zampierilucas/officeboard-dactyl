@@ -11,7 +11,8 @@
     keymap {
         compatible = "zmk,keymap";
 
-        qwerty_layer {
+        base {
+            display-name = "Base";
             // -----------------------------------------------------------------------------------------
             // |  ESC |  1  |  2  |  3  |  4  |  5  |            |  6  |  7  |  8  |  9  |  0  | BSPC |
             // |  TAB |  Q  |  W  |  E  |  R  |  T  |            |  Y  |  U  |  I  |  O  |  P  |  -   |
@@ -34,30 +35,33 @@
             >;
         };
 
-        lower_layer {
+        lower {
+            display-name = "Lower";
             // -----------------------------------------------------------------------------------------
             // |  ~   | !   | @   |  #  |  $  |  %  |            | F20 | F21 |  *  |  (  |  )  | DEL  |
             // |      |     |     |     |     |  [  |            |  ]  |  7  |  UP |  9  |     |  +   |
             // |      |     |     |     |     |  (  |            |  )  | LFT | DWN | RGT |  -  |  '   |
-            // |      |     |     |     |     |BOOT |            |BOOT |     |  2  |  3  |  =  |  _   |
+            // |      |     |     |     |     |STUL* |            |BOOT |     |  2  |  3  |  =  |  _   |
             //                    |     |PSCR |                                    |     |  0  |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
+            // *STUL = Studio Unlock (dongle only), BOOT = Bootloader (left/right)
 
             bindings = <
-            &kp GRAVE  &kp EXCL  &kp AT    &kp HASH  &kp DLLR  &kp PRCNT                       &kp F20      &kp F21   &kp ASTRK  &kp LPAR   &kp RPAR  &kp DEL
-            &trans     &trans    &trans    &trans    &trans    &kp LBKT                        &kp RBKT     &kp N7    &kp UP     &kp N9     &trans    &kp PLUS
-            &trans     &trans    &trans    &trans    &trans    &kp LPAR                        &kp RPAR     &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
-            &trans     &trans    &trans    &trans    &trans    &bootloader                     &bootloader  &trans    &kp N2     &kp N3     &kp EQUAL &kp UNDER
-                                           &trans    &kp PSCRN                                                        &trans     &kp N0
-                                                     &trans    &trans                          &trans       &trans
-                                                     &trans    &trans                          &trans       &trans
-                                                     &trans    &trans                          &trans       &trans
+            &kp GRAVE  &kp EXCL  &kp AT    &kp HASH  &kp DLLR  &kp PRCNT                       &kp F20         &kp F21   &kp ASTRK  &kp LPAR   &kp RPAR  &kp DEL
+            &trans     &trans    &trans    &trans    &trans    &kp LBKT                        &kp RBKT        &kp N7    &kp UP     &kp N9     &trans    &kp PLUS
+            &trans     &trans    &trans    &trans    &trans    &kp LPAR                        &kp RPAR        &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
+            &trans     &trans    &trans    &trans    &trans    &studio_unlock                  &bootloader     &trans    &kp N2     &kp N3     &kp EQUAL &kp UNDER
+                                           &trans    &kp PSCRN                                                            &trans     &kp N0
+                                                     &trans    &trans                                 &trans       &trans
+                                                     &trans    &trans                                 &trans       &trans
+                                                     &trans    &trans                                 &trans       &trans
             >;
         };
 
-        raise_layer {
+        raise {
+            display-name = "Raise";
             // -----------------------------------------------------------------------------------------
             // | GRAVE  | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
             // |      |     |     |     |     |  [  |            |     |     | NUM | INS |SCRL |VOL_UP|

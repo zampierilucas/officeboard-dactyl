@@ -4,11 +4,19 @@
  */
 
 #include <dt-bindings/zmk/matrix_transform.h>
+#include "dactyl_manuform_5x6-layouts.dtsi"
 
 / {
     chosen {
-        zmk,matrix-transform = &default_transform;
+        zmk,kscan = &kscan_composite;
         zmk,battery-reporting = &battery_reporting;
+        zmk,physical-layout = &dactyl_5x6_layout;
+    };
+
+    kscan_composite: kscan_composite {
+        compatible = "zmk,kscan-composite";
+        rows = <6>;
+        columns = <12>;
     };
 
     battery_reporting: battery_reporting {
@@ -45,4 +53,9 @@
                                         RC(5,2) RC(5,3)  RC(5,8) RC(5,9)
         >;
     };
+
+};
+
+&dactyl_5x6_layout {
+    transform = <&default_transform>;
 };

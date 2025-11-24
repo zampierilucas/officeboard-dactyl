@@ -1,0 +1,96 @@
+/*
+ * Copyright (c) 2025 The ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <physical_layouts.dtsi>
+
+/ {
+    dactyl_5x6_layout: dactyl_5x6_layout {
+        compatible = "zmk,physical-layout";
+        display-name = "Dactyl Manuform 5x6";
+
+        keys  //                     w    h     x     y     r    rx    ry
+            // Row 0: ESC, 1, 2, 3, 4, 5 | 6, 7, 8, 9, 0, BSPC (indices 0-11)
+            = <&key_physical_attrs 100  100     0     0     0     0     0>  // 0: ESC
+            , <&key_physical_attrs 100  100   100     0     0     0     0>  // 1: 1
+            , <&key_physical_attrs 100  100   200     0     0     0     0>  // 2: 2
+            , <&key_physical_attrs 100  100   300     0     0     0     0>  // 3: 3
+            , <&key_physical_attrs 100  100   400     0     0     0     0>  // 4: 4
+            , <&key_physical_attrs 100  100   500     0     0     0     0>  // 5: 5
+            , <&key_physical_attrs 100  100   800     0     0     0     0>  // 6: 6
+            , <&key_physical_attrs 100  100   900     0     0     0     0>  // 7: 7
+            , <&key_physical_attrs 100  100  1000     0     0     0     0>  // 8: 8
+            , <&key_physical_attrs 100  100  1100     0     0     0     0>  // 9: 9
+            , <&key_physical_attrs 100  100  1200     0     0     0     0>  // 10: 0
+            , <&key_physical_attrs 100  100  1300     0     0     0     0>  // 11: BSPC
+            // Row 1: TAB, Q, W, E, R, T | Y, U, I, O, P, - (indices 12-23)
+            , <&key_physical_attrs 100  100     0   100     0     0     0>  // 12: TAB
+            , <&key_physical_attrs 100  100   100   100     0     0     0>  // 13: Q
+            , <&key_physical_attrs 100  100   200   100     0     0     0>  // 14: W
+            , <&key_physical_attrs 100  100   300   100     0     0     0>  // 15: E
+            , <&key_physical_attrs 100  100   400   100     0     0     0>  // 16: R
+            , <&key_physical_attrs 100  100   500   100     0     0     0>  // 17: T
+            , <&key_physical_attrs 100  100   800   100     0     0     0>  // 18: Y
+            , <&key_physical_attrs 100  100   900   100     0     0     0>  // 19: U
+            , <&key_physical_attrs 100  100  1000   100     0     0     0>  // 20: I
+            , <&key_physical_attrs 100  100  1100   100     0     0     0>  // 21: O
+            , <&key_physical_attrs 100  100  1200   100     0     0     0>  // 22: P
+            , <&key_physical_attrs 100  100  1300   100     0     0     0>  // 23: -
+            // Row 2: SHFT, A, S, D, F, G | H, J, K, L, ;, á (indices 24-35)
+            , <&key_physical_attrs 100  100     0   200     0     0     0>  // 24: SHFT
+            , <&key_physical_attrs 100  100   100   200     0     0     0>  // 25: A
+            , <&key_physical_attrs 100  100   200   200     0     0     0>  // 26: S
+            , <&key_physical_attrs 100  100   300   200     0     0     0>  // 27: D
+            , <&key_physical_attrs 100  100   400   200     0     0     0>  // 28: F
+            , <&key_physical_attrs 100  100   500   200     0     0     0>  // 29: G
+            , <&key_physical_attrs 100  100   800   200     0     0     0>  // 30: H
+            , <&key_physical_attrs 100  100   900   200     0     0     0>  // 31: J
+            , <&key_physical_attrs 100  100  1000   200     0     0     0>  // 32: K
+            , <&key_physical_attrs 100  100  1100   200     0     0     0>  // 33: L
+            , <&key_physical_attrs 100  100  1200   200     0     0     0>  // 34: ;
+            , <&key_physical_attrs 100  100  1300   200     0     0     0>  // 35: á
+            // Row 3: CTRL, Z, X, C, V, B | N, M, ,, ., /, \ (indices 36-47)
+            , <&key_physical_attrs 100  100     0   300     0     0     0>  // 36: CTRL
+            , <&key_physical_attrs 100  100   100   300     0     0     0>  // 37: Z
+            , <&key_physical_attrs 100  100   200   300     0     0     0>  // 38: X
+            , <&key_physical_attrs 100  100   300   300     0     0     0>  // 39: C
+            , <&key_physical_attrs 100  100   400   300     0     0     0>  // 40: V
+            , <&key_physical_attrs 100  100   500   300     0     0     0>  // 41: B
+            , <&key_physical_attrs 100  100   800   300     0     0     0>  // 42: N
+            , <&key_physical_attrs 100  100   900   300     0     0     0>  // 43: M
+            , <&key_physical_attrs 100  100  1000   300     0     0     0>  // 44: ,
+            , <&key_physical_attrs 100  100  1100   300     0     0     0>  // 45: .
+            , <&key_physical_attrs 100  100  1200   300     0     0     0>  // 46: /
+            , <&key_physical_attrs 100  100  1300   300     0     0     0>  // 47: \
+            // Thumb cluster (indices 48-63) - MUST match matrix transform order!
+            // Matrix order: RC(4,2) RC(4,3) RC(4,8) RC(4,9) RC(4,4) RC(4,5) RC(4,6) RC(4,7) RC(5,4) RC(5,5) RC(5,6) RC(5,7) RC(5,2) RC(5,3) RC(5,8) RC(5,9)
+            // LEFT: [] under X,C | RAISE,SPACE under C,V | bottom 4 under V,B
+            // RIGHT: mirrored - under M,, | under ,,. | under .,/
+
+            // Top row: [] under X,C (x=200,300, y=400)
+            , <&key_physical_attrs 100  100   200   400     0     0     0>  // 48: [ - RC(4,2) - under X
+            , <&key_physical_attrs 100  100   300   400     0     0     0>  // 49: ] - RC(4,3) - under C
+            , <&key_physical_attrs 100  100  1000   400     0     0     0>  // 50: + - RC(4,8) - under , (mirrored)
+            , <&key_physical_attrs 100  100  1100   400     0     0     0>  // 51: = - RC(4,9) - under . (mirrored)
+
+            // Second row: RAISE,SPACE under C,V (x=300,400, y=500)
+            , <&key_physical_attrs 100  100   300   500     0     0     0>  // 52: RAISE (mo 2) - RC(4,4) - under C
+            , <&key_physical_attrs 100  100   400   500     0     0     0>  // 53: SPACE - RC(4,5) - under V
+            , <&key_physical_attrs 100  100   900   500     0     0     0>  // 54: ENTER - RC(4,6) - under M (mirrored)
+            , <&key_physical_attrs 100  100  1000   500     0     0     0>  // 55: LOWER (mo 1) - RC(4,7) - under , (mirrored)
+
+            // Third row: LGUI,DEL under V,B (x=400,500, y=600)
+            , <&key_physical_attrs 100  100   400   600     0     0     0>  // 56: LGUI - RC(5,4) - under V
+            , <&key_physical_attrs 100  100   500   600     0     0     0>  // 57: DEL - RC(5,5) - under B
+            , <&key_physical_attrs 100  100   800   600     0     0     0>  // 58: PG_UP - RC(5,6) - under N (mirrored)
+            , <&key_physical_attrs 100  100   900   600     0     0     0>  // 59: PG_DN - RC(5,7) - under M (mirrored)
+
+            // Bottom row: BSPC,` under V,B (x=400,500, y=700)
+            , <&key_physical_attrs 100  100   400   700     0     0     0>  // 60: BSPC - RC(5,2) - under V
+            , <&key_physical_attrs 100  100   500   700     0     0     0>  // 61: ` - RC(5,3) - under B
+            , <&key_physical_attrs 100  100   800   700     0     0     0>  // 62: HOME - RC(5,8) - under N (mirrored)
+            , <&key_physical_attrs 100  100   900   700     0     0     0>  // 63: END - RC(5,9) - under M (mirrored)
+            ;
+    };
+};
