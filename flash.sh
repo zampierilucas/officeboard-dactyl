@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Flash script for Dactyl Manuform keyboard firmware
-# Usage: ./flash.sh [left|right|dongle|dongle-log]
+# Usage: ./flash.sh [left|right|dongle|dongle-log|left-ble|right-ble]
 
 set -e
 
@@ -14,9 +14,22 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 if [ $# -eq 0 ]; then
-    echo -e "${RED}Usage: $0 [left|right|dongle|dongle-log]${NC}"
-    echo -e "${CYAN}Example: $0 left${NC}"
-    echo -e "${CYAN}Example: $0 dongle-log  # Flash dongle with USB logging${NC}"
+    echo -e "${RED}Usage: $0 [left|right|dongle|dongle-log|left-ble|right-ble|reset]${NC}"
+    echo ""
+    echo -e "${BLUE}Dongle mode (use with USB dongle):${NC}"
+    echo -e "${CYAN}  $0 left        ${NC}# Left half (peripheral)"
+    echo -e "${CYAN}  $0 right       ${NC}# Right half (peripheral)"
+    echo -e "${CYAN}  $0 dongle      ${NC}# USB dongle (central)"
+    echo ""
+    echo -e "${BLUE}Dongle-less mode (direct Bluetooth):${NC}"
+    echo -e "${CYAN}  $0 left-ble    ${NC}# Left half (central, connects to host)"
+    echo -e "${CYAN}  $0 right-ble   ${NC}# Right half (peripheral, connects to left)"
+    echo ""
+    echo -e "${BLUE}Utility:${NC}"
+    echo -e "${CYAN}  $0 reset       ${NC}# Settings reset (clears BT bonds, flash to BOTH halves)"
+    echo ""
+    echo -e "${BLUE}Debug:${NC}"
+    echo -e "${CYAN}  $0 dongle-log  ${NC}# Dongle with USB logging"
     exit 1
 fi
 
@@ -27,6 +40,15 @@ MOUNT_POINT="/tmp/zmk_flash_$$"
 case $TARGET in
     left|right)
         FIRMWARE="build/dactyl_manuform_5x6_${TARGET}-nice_nano_v2-zmk.uf2"
+        TARGET="$TARGET (dongle mode)"
+        ;;
+    left-ble)
+        FIRMWARE="build/dactyl_manuform_5x6_left_central_ble.uf2"
+        TARGET="left (dongle-less mode, central)"
+        ;;
+    right-ble)
+        FIRMWARE="build/dactyl_manuform_5x6_right_peripheral_ble.uf2"
+        TARGET="right (dongle-less mode, peripheral)"
         ;;
     dongle)
         FIRMWARE="build/dactyl_manuform_5x6_dongle_studio.uf2"
@@ -35,9 +57,13 @@ case $TARGET in
         FIRMWARE="build/dactyl_manuform_5x6_dongle-nice_nano_v2-zmk-logging.uf2"
         TARGET="dongle (with logging)"
         ;;
+    reset)
+        FIRMWARE="build/settings_reset-nice_nano_v2-zmk.uf2"
+        TARGET="settings reset (flash to BOTH halves)"
+        ;;
     *)
         echo -e "${RED}Error: Invalid target '$TARGET'${NC}"
-        echo -e "${YELLOW}Valid targets: left, right, dongle, dongle-log${NC}"
+        echo -e "${YELLOW}Valid targets: left, right, dongle, dongle-log, left-ble, right-ble, reset${NC}"
         exit 1
         ;;
 esac

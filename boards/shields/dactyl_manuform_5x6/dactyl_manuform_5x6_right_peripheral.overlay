@@ -1,0 +1,9 @@
+/*
+ * Copyright (c) 2025 The ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ *
+ * Dongle-less mode: Right half as peripheral
+ * This variant connects to the left_central half instead of a dongle.
+ */
+
+#include "dactyl_manuform_5x6_right.overlay"

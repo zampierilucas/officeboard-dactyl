@@ -1,6 +1,7 @@
 # Copyright (c) 2025 The ZMK Contributors
 # SPDX-License-Identifier: MIT
 
+# Dongle mode shields (left and right as peripherals)
 config SHIELD_DACTYL_MANUFORM_5X6_LEFT
     def_bool $(shields_list_contains,dactyl_manuform_5x6_left)
 
@@ -9,3 +10,10 @@ config SHIELD_DACTYL_MANUFORM_5X6_RIGHT
 
 config SHIELD_DACTYL_MANUFORM_5X6_DONGLE
     def_bool $(shields_list_contains,dactyl_manuform_5x6_dongle)
+
+# Dongle-less mode shields (left as central, right as peripheral)
+config SHIELD_DACTYL_MANUFORM_5X6_LEFT_CENTRAL
+    def_bool $(shields_list_contains,dactyl_manuform_5x6_left_central)
+
+config SHIELD_DACTYL_MANUFORM_5X6_RIGHT_PERIPHERAL
+    def_bool $(shields_list_contains,dactyl_manuform_5x6_right_peripheral)

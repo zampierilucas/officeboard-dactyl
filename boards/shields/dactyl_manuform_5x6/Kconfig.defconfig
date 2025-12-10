@@ -1,6 +1,10 @@
 # Copyright (c) 2025 The ZMK Contributors
 # SPDX-License-Identifier: MIT
 
+# ============================================================================
+# Dongle mode: left and right as peripherals, dongle as central
+# ============================================================================
+
 if SHIELD_DACTYL_MANUFORM_5X6_LEFT
 
 config ZMK_KEYBOARD_NAME
@@ -31,7 +35,34 @@ config ZMK_SPLIT_ROLE_CENTRAL
 
 endif
 
-if SHIELD_DACTYL_MANUFORM_5X6_LEFT || SHIELD_DACTYL_MANUFORM_5X6_RIGHT || SHIELD_DACTYL_MANUFORM_5X6_DONGLE
+# ============================================================================
+# Dongle-less mode: left as central, right as peripheral
+# ============================================================================
+
+if SHIELD_DACTYL_MANUFORM_5X6_LEFT_CENTRAL
+
+config ZMK_KEYBOARD_NAME
+    default "Dactyl 5x6 BLE"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_DACTYL_MANUFORM_5X6_RIGHT_PERIPHERAL
+
+# Peripheral should NOT have ZMK_KEYBOARD_NAME - only the central advertises to hosts
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
+
+endif
+
+# ============================================================================
+# Common split config for all variants
+# ============================================================================
+
+if SHIELD_DACTYL_MANUFORM_5X6_LEFT || SHIELD_DACTYL_MANUFORM_5X6_RIGHT || SHIELD_DACTYL_MANUFORM_5X6_DONGLE || SHIELD_DACTYL_MANUFORM_5X6_LEFT_CENTRAL || SHIELD_DACTYL_MANUFORM_5X6_RIGHT_PERIPHERAL
 
 config ZMK_SPLIT
     default y

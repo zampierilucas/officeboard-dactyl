@@ -19,6 +19,9 @@
 #
 ---
 include:
+  # ============================================================================
+  # Dongle mode: Use with USB dongle (best battery life)
+  # ============================================================================
   - board: nice_nano_v2
     shield: dactyl_manuform_5x6_left
   - board: nice_nano_v2
@@ -28,3 +31,20 @@ include:
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
     artifact-name: dactyl_manuform_5x6_dongle_studio
+
+  # ============================================================================
+  # Dongle-less mode: Direct Bluetooth connection (no dongle required)
+  # Left half acts as central, advertises as "Dactyl 5x6 BLE"
+  # ============================================================================
+  - board: nice_nano_v2
+    shield: dactyl_manuform_5x6_left_central
+    artifact-name: dactyl_manuform_5x6_left_central_ble
+  - board: nice_nano_v2
+    shield: dactyl_manuform_5x6_right_peripheral
+    artifact-name: dactyl_manuform_5x6_right_peripheral_ble
+
+  # ============================================================================
+  # Utility: Settings reset (clears all Bluetooth bonds and settings)
+  # ============================================================================
+  - board: nice_nano_v2
+    shield: settings_reset

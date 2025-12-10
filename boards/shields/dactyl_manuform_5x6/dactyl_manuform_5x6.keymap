@@ -9,6 +9,14 @@
 #include <dt-bindings/zmk/outputs.h>
 
 / {
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <1 2>;
+            then-layer = <3>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -32,7 +40,7 @@
                                         &kp LBKT  &kp RBKT                                            &kp PLUS  &kp EQUAL
                                                   &mo 2     &kp SPACE                                 &kp ENTER &mo 1
                                                   &kp LGUI  &kp DEL                                   &kp PG_UP &kp PG_DN
-                                                  &kp BSPC  &kp GRAVE                                 &kp HOME  &kp END
+                                                  &kp BSPC  &kp LALT                                  &kp HOME  &kp END
             >;
         };
 
@@ -65,23 +73,47 @@
             display-name = "Raise";
             // -----------------------------------------------------------------------------------------
             // | GRAVE  | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
-            // | BT_CLR | BT0 | BT1 | BT2 | BT3 | BT4 |            |     |     |     |     |     |VOL_UP|
-            // | OUT_TOG|BTNXT|BTPRV|     |     |     |            |     |PREV |PLAY |NEXT |     |VOL_DN|
-            // |      |     |     |  ñ  |     |BOOT |            |BOOT |     |     |     |     |      |
-            //                    |     |PSCR |                                    |     |     |
+            // |        | |VOL_UP| UP    |     |     |            |     |     |     |     |     | F12  |
+            // |        | |LEFT  | DOWN  | RIGHT    |     |            | LFT | DWN |  UP | RGT |     |      |
+            // |        | |STOP  |DWN  |RGT  |BOOT |            |BOOT |     |     |     |  ñ  |      |
+            //                    |  {  |  }  |                                    |  `  |  ~  |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
-            //                          |     |     |            |PG_UP|PG_DN|
+            //                          |     |MUTE |            |MUTE |     |
 
             bindings = <
-            &kp GRAVE     &kp F1        &kp F2        &kp F3         &kp F4         &kp F5                           &kp F6       &kp F7     &kp F8     &kp F9     &kp F10  &kp F11
-            &bt BT_CLR    &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4                     &trans       &trans     &trans     &trans     &trans   &kp C_VOL_UP
-            &out OUT_TOG  &bt BT_NXT    &bt BT_PRV    &trans         &trans         &trans                           &trans       &kp C_PREV &kp C_PP   &kp C_NEXT &trans   &kp C_VOL_DN
-            &trans        &trans        &trans        &kp RA(COMMA)  &trans         &bootloader                      &bootloader  &trans     &trans     &trans     &trans   &trans
-                                                          &trans         &kp PSCRN                                                            &trans     &trans
-                                                                         &trans   &trans                              &trans       &trans
-                                                                         &trans   &trans                              &trans       &trans
-                                                                         &trans   &trans                              &kp PG_UP    &kp PG_DN
+            &kp GRAVE  &kp F1 &kp F2   &kp F3   &kp F4    &kp F5                      &kp F6      &kp F7     &kp F8    &kp F9     &kp F10       &kp F11
+            &trans     &trans &trans   &kp UP   &trans    &trans                      &trans     &trans    &trans     &trans   &kp F12  &kp C_VOL_UP
+            &trans     &trans &kp LEFT &kp DOWN &kp RIGHT &trans                      &trans      &kp C_PREV &kp C_PP  &kp C_NEXT &trans        &kp C_VOL_DN
+            &trans     &trans &trans   &trans   &trans    &bootloader                 &bootloader &trans     &trans    &trans     &kp RA(COMMA) &trans
+                                                &kp LBRC  &kp RBRC                                            &kp GRAVE  &kp TILDE
+                                                         &trans      &trans                      &trans       &trans
+                                                         &trans      &trans                      &trans       &trans
+                                                         &trans      &kp C_MUTE                  &kp C_MUTE   &trans
+            >;
+        };
+
+        adjust {
+            display-name = "Adjust";
+            // -----------------------------------------------------------------------------------------
+            // |      | BT1  | BT2  | BT3  | BT4  | BT5  |            |     |     |     |     |     |      |
+            // |      |      |      |      |      |      |            |     |     |     |     |     |      |
+            // |OUTTOG|BT_CLR|BTNXT |BTPRV |      |      |            |     |     |     |     |     |      |
+            // |      |      |      |      |      |BOOT  |            |BOOT |     |     |     |     |      |
+            //                      |      |      |                              |     |     |
+            //                            |     |     |            |     |     |
+            //                            |     |     |            |     |     |
+            //                            |     |     |            |     |     |
+
+            bindings = <
+            &bt BT_CLR    &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                &trans       &trans  &trans  &trans  &trans  &trans
+            &trans        &trans        &trans        &trans        &trans        &bt BT_NXT                  &trans       &trans  &trans  &trans  &trans  &trans
+            &out OUT_TOG  &trans        &trans        &trans        &trans        &bt BT_PRV                  &trans       &trans  &trans  &trans  &trans  &trans
+            &trans        &trans        &trans        &trans        &trans        &bootloader                 &bootloader  &trans  &trans  &trans  &trans  &trans
+                                                      &trans        &trans                                                 &trans  &trans
+                                                                    &trans        &trans                      &trans       &trans
+                                                                    &trans        &trans                      &trans       &trans
+                                                                    &trans        &trans                      &trans       &trans
             >;
         };
     };
