@@ -17,9 +17,8 @@ echo ""
 WORKSPACE_DIR="$(pwd)"
 BUILD_DIR="${WORKSPACE_DIR}/build"
 ZMK_WORKSPACE="${WORKSPACE_DIR}/.zmk-workspace"
-ZMK_VERSION="v0.2.1"
 ZMK_REPO="https://github.com/zmkfirmware/zmk.git"
-ZMK_BRANCH="$ZMK_VERSION"
+ZMK_BRANCH="main"
 
 # Use local ZMK directory for development (skips git clone)
 USE_LOCAL_ZMK="${USE_LOCAL_ZMK:-false}"
@@ -32,8 +31,9 @@ if [ "$USE_LOCAL_ZMK" = "true" ]; then
         exit 1
     fi
 else
-    # Override with HID battery reporting (default: enabled)
-    if [ "${USE_HID_BATTERY:-true}" = "true" ]; then
+    # HID battery reporting fork (disabled by default - not Zephyr 4.1 compatible)
+    if [ "${USE_HID_BATTERY:-false}" = "true" ]; then
+        echo -e "${YELLOW}WARNING: HID battery forks are NOT compatible with Zephyr 4.1${NC}"
         # Choose between Genteure's fork (default) and personal fork
         if [ "${USE_PERSONAL_FORK:-false}" = "true" ]; then
             ZMK_REPO="https://github.com/zampierilucas/zmk.git"
@@ -44,6 +44,8 @@ else
             ZMK_BRANCH="feat/battery-reporting"
             echo -e "${YELLOW}Using PR #2938 branch for USB HID battery reporting${NC}"
         fi
+    else
+        echo -e "${GREEN}Using official ZMK main (Zephyr 4.1)${NC}"
     fi
 fi
 
@@ -286,7 +288,7 @@ if [ "$PARALLEL" = "true" ]; then
 
     # Build logging-enabled dongle if enabled
     if [ "$BUILD_DONGLE_LOGGING" = "true" ]; then
-        build_shield_logging "dactyl_manuform_5x6_dongle" "nice_nano_v2" &
+        build_shield_logging "dactyl_manuform_5x6_dongle" "nice_nano" &
         PIDS+=($!)
         BUILD_NAMES+=("dactyl_manuform_5x6_dongle-logging")
     fi
@@ -347,19 +349,19 @@ done
 echo ""
 if [ "$BUILD_DONGLE_LOGGING" = "true" ]; then
     echo -e "${BLUE}Debug version (with USB logging):${NC}"
-    echo "  - Dongle:      $BUILD_DIR/dactyl_manuform_5x6_dongle-nice_nano_v2-zmk-logging.uf2"
+    echo "  - Dongle:      $BUILD_DIR/dactyl_manuform_5x6_dongle-nice_nano-zmk-logging.uf2"
     echo ""
 fi
 echo -e "${YELLOW}Tips:${NC}"
 echo "  - For clean build: PRISTINE=true ./build-local.sh"
 echo "  - For sequential build: PARALLEL=false ./build-local.sh"
-echo "  - Disable dongle logging: BUILD_DONGLE_LOGGING=false ./build-local.sh"
+echo "  - Enable dongle logging build: BUILD_DONGLE_LOGGING=true ./build-local.sh"
 echo "  - Use local ZMK: USE_LOCAL_ZMK=true ./build-local.sh"
 echo "  - Set local ZMK path: LOCAL_ZMK_PATH=/path/to/zmk USE_LOCAL_ZMK=true ./build-local.sh"
 echo ""
-echo -e "${YELLOW}Options when NOT using local ZMK:${NC}"
-echo "  - Disable HID battery: USE_HID_BATTERY=false ./build-local.sh"
-echo "  - Use personal fork: USE_PERSONAL_FORK=true ./build-local.sh"
+echo -e "${YELLOW}Fork options (NOT Zephyr 4.1 compatible):${NC}"
+echo "  - Enable HID battery fork: USE_HID_BATTERY=true ./build-local.sh"
+echo "  - Use personal fork: USE_HID_BATTERY=true USE_PERSONAL_FORK=true ./build-local.sh"
 echo ""
 echo -e "${YELLOW}Maintenance:${NC}"
 echo "  - To clean workspace: rm -rf .zmk-workspace"

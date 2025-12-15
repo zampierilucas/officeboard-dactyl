@@ -5,13 +5,13 @@
 # pass flags to the build command, `snippet` to add a Zephyr snippet, and
 # `artifact-name` to assign a name to distinguish build outputs from each other:
 #
-# board: [ "nice_nano_v2" ]
+# board: [ "nice_nano" ]
 # shield: [ "corne_left", "corne_right" ]
 # include:
 #   - board: bdn9_rev2
-#   - board: nice_nano_v2
+#   - board: nice_nano
 #     shield: reviung41
-#   - board: nice_nano_v2
+#   - board: nice_nano
 #     shield: corne_left
 #     snippet: studio-rpc-usb-uart
 #     cmake-args: -DCONFIG_ZMK_STUDIO=y
@@ -22,11 +22,11 @@ include:
   # ============================================================================
   # Dongle mode: Use with USB dongle (best battery life)
   # ============================================================================
-  - board: nice_nano_v2
+  - board: nice_nano
     shield: dactyl_manuform_5x6_left
-  - board: nice_nano_v2
+  - board: nice_nano
     shield: dactyl_manuform_5x6_right
-  - board: nice_nano_v2
+  - board: nice_nano
     shield: dactyl_manuform_5x6_dongle
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
@@ -36,15 +36,15 @@ include:
   # Dongle-less mode: Direct Bluetooth connection (no dongle required)
   # Left half acts as central, advertises as "Dactyl 5x6 BLE"
   # ============================================================================
-  - board: nice_nano_v2
+  - board: nice_nano
     shield: dactyl_manuform_5x6_left_central
     artifact-name: dactyl_manuform_5x6_left_central_ble
-  - board: nice_nano_v2
+  - board: nice_nano
     shield: dactyl_manuform_5x6_right_peripheral
     artifact-name: dactyl_manuform_5x6_right_peripheral_ble
 
   # ============================================================================
   # Utility: Settings reset (clears all Bluetooth bonds and settings)
   # ============================================================================
-  - board: nice_nano_v2
+  - board: nice_nano
     shield: settings_reset

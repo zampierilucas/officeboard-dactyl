@@ -3,6 +3,16 @@ build/
 .zmk/
 .zmk-workspace/
 .vscode/
-boards/zephyr/
 mount/
-*.sh
+
+# West-managed directories (fetched by west update)
+zephyr/
+modules/
+docs/
+optional/
+.west/
+
+# Track boards/zephyr/module.yml but not build artifacts
+!boards/zephyr/
+boards/zephyr/*
+!boards/zephyr/module.yml
