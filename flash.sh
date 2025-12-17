@@ -39,7 +39,7 @@ MOUNT_POINT="/tmp/zmk_flash_$$"
 # Validate target and determine firmware filename
 case $TARGET in
     left|right)
-        FIRMWARE="build/dactyl_manuform_5x6_${TARGET}-nice_nano_v2-zmk.uf2"
+        FIRMWARE="build/dactyl_manuform_5x6_${TARGET}-nice_nano-zmk.uf2"
         TARGET="$TARGET (dongle mode)"
         ;;
     left-ble)
@@ -54,11 +54,11 @@ case $TARGET in
         FIRMWARE="build/dactyl_manuform_5x6_dongle_studio.uf2"
         ;;
     dongle-log)
-        FIRMWARE="build/dactyl_manuform_5x6_dongle-nice_nano_v2-zmk-logging.uf2"
+        FIRMWARE="build/dactyl_manuform_5x6_dongle-nice_nano-zmk-logging.uf2"
         TARGET="dongle (with logging)"
         ;;
     reset)
-        FIRMWARE="build/settings_reset-nice_nano_v2-zmk.uf2"
+        FIRMWARE="build/settings_reset-nice_nano-zmk.uf2"
         TARGET="settings reset (flash to BOTH halves)"
         ;;
     *)

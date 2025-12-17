@@ -9,6 +9,36 @@
 #include <dt-bindings/zmk/outputs.h>
 
 / {
+    macros {
+        // Macro to clear all BT bonds (takes 1 param but ignores it, for hold-tap compatibility)
+        bt_clr_all: bt_clr_all {
+            compatible = "zmk,behavior-macro-one-param";
+            #binding-cells = <1>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings = <&bt BT_CLR_ALL>;
+        };
+        // No-op macro (takes 1 param but ignores it, for hold-tap compatibility)
+        none_macro: none_macro {
+            compatible = "zmk,behavior-macro-one-param";
+            #binding-cells = <1>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings = <&none>;
+        };
+    };
+
+    behaviors {
+        // Hold for 5 seconds to clear all BT bonds - prevents accidental triggers
+        bt_clr_hold: bt_clr_hold {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <5000>;
+            bindings = <&bt_clr_all>, <&none_macro>;
+        };
+    };
+
     conditional_layers {
         compatible = "zmk,conditional-layers";
         tri_layer {
@@ -27,10 +57,10 @@
             // |  TAB |  Q  |  W  |  E  |  R  |  T  |            |  Y  |  U  |  I  |  O  |  P  |  -   |
             // | SHFT |  A  |  S  |  D  |  F  |  G  |            |  H  |  J  |  K  |  L  |  ;  |  á   |
             // | CTRL |  Z  |  X  |  C  |  V  |  B  |            |  N  |  M  |  ,  |  .  |  /  |  \   |
-            //                    |  [  |  ]  |                                    |  +  |  =  |
-            //                          |RAISE|SPC  |            |ENTER|LOWER|
-            //                          |LGUI |LALT |            | DEL |LGUI |
-            //                          |BSPC | `   |            |HOME | END |
+            //                    |  [  |  ]  |                              |  +  |  =  |
+            //                          |RAISE| SPC |            |ENTER|LOWER|
+            //                          |LGUI | DEL |            |PGUP |PGDN |
+            //                          |BSPC |LALT |            |HOME | END |
 
             bindings = <
             &kp ESC   &kp N1   &kp N2   &kp N3    &kp N4    &kp N5                          &kp N6    &kp N7    &kp N8     &kp N9   &kp N0    &kp BSPC
@@ -47,23 +77,23 @@
         lower {
             display-name = "Lower";
             // -----------------------------------------------------------------------------------------
-            // |  ~   |     |     |     |     |     |            | F20 | F21 |     |     |     | DEL  |
+            // |  `   |     |     |     |     |     |            | F20 | F21 |     |     |     | DEL  |
             // |      |     |     |     |     |     |            |     |     |  UP |     |     |  +   |
             // |      |     |     |     |     |     |            |     | LFT | DWN | RGT |  -  |  '   |
-            // |      |     |     |     |     |STUL* |            |BOOT |     |     |     |  =  |  _   |
-            //                    |     |PSCR |                                    |     |     |
+            // |BTCLR*|     |     |     |     |STUL*|            |BOOT |     |     |     |  =  |  _   |
+            //                    |     |  ç  |                              |     |     |
+            //                          |PSCR |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
-            //                          |     |     |            |     |     |
-            // *STUL = Studio Unlock (dongle only), BOOT = Bootloader (left/right)
+            // *BTCLR = BT Clear All (hold 5s), BOOT = Bootloader
 
             bindings = <
             &kp GRAVE  &trans    &trans    &trans    &trans    &trans                          &kp F20         &kp F21   &trans     &trans     &trans    &kp DEL
             &trans     &trans    &trans    &trans    &trans    &trans                          &trans          &trans    &kp UP     &trans     &trans    &kp PLUS
             &trans     &trans    &trans    &trans    &trans    &trans                          &trans          &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
-            &trans     &trans    &trans    &trans    &trans    &studio_unlock                  &bootloader     &trans    &trans     &trans     &kp EQUAL &kp UNDER
-                                           &trans    &kp PSCRN                                                            &trans     &trans
-                                                     &trans    &trans                                 &trans       &trans
+            &bt_clr_hold 0 0  &trans  &trans  &trans  &trans  &none                           &bootloader     &trans    &trans     &trans     &kp EQUAL &kp UNDER
+                                           &trans    &kp RA(COMMA)                                                       &trans     &trans
+                                                     &kp PSCRN &trans                                 &trans       &trans
                                                      &trans    &trans                                 &trans       &trans
                                                      &trans    &trans                                 &trans       &trans
             >;
@@ -72,11 +102,11 @@
         raise {
             display-name = "Raise";
             // -----------------------------------------------------------------------------------------
-            // | GRAVE  | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
-            // |        | |VOL_UP| UP    |     |     |            |     |     |     |     |     | F12  |
-            // |        | |LEFT  | DOWN  | RIGHT    |     |            | LFT | DWN |  UP | RGT |     |      |
-            // |        | |STOP  |DWN  |RGT  |BOOT |            |BOOT |     |     |     |  ñ  |      |
-            //                    |  {  |  }  |                                    |  `  |  ~  |
+            // |  `   | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
+            // |      |     |     |  UP |     |     |            |     |     |     |     | F12 |VOL_UP|
+            // |      |     | LFT | DWN | RGT |     |            |     |PREV |PLAY |NEXT |     |VOL_DN|
+            // |      |     |     |     |     |BOOT |            |BOOT |     |     |     |  ñ  |      |
+            //                    |  {  |  }  |                              |  `  |  ~  |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |MUTE |            |MUTE |     |
@@ -96,14 +126,14 @@
         adjust {
             display-name = "Adjust";
             // -----------------------------------------------------------------------------------------
-            // |      | BT1  | BT2  | BT3  | BT4  | BT5  |            |     |     |     |     |     |      |
-            // |      |      |      |      |      |      |            |     |     |     |     |     |      |
-            // |OUTTOG|BT_CLR|BTNXT |BTPRV |      |      |            |     |     |     |     |     |      |
+            // |BT_CLR| BT1  | BT2  | BT3  | BT4  | BT5  |            |     |     |     |     |     |      |
+            // |      |      |      |      |      |BTNXT |            |     |     |     |     |     |      |
+            // |OUTTOG|      |      |      |      |BTPRV |            |     |     |     |     |     |      |
             // |      |      |      |      |      |BOOT  |            |BOOT |     |     |     |     |      |
             //                      |      |      |                              |     |     |
-            //                            |     |     |            |     |     |
-            //                            |     |     |            |     |     |
-            //                            |     |     |            |     |     |
+            //                            |      |      |            |     |     |
+            //                            |      |      |            |     |     |
+            //                            |      |      |            |     |     |
 
             bindings = <
             &bt BT_CLR    &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                &trans       &trans  &trans  &trans  &trans  &trans
