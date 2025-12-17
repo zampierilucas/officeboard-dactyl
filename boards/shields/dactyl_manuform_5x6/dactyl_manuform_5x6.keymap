@@ -37,6 +37,14 @@
             tapping-term-ms = <5000>;
             bindings = <&bt_clr_all>, <&none_macro>;
         };
+
+        // Tap 5 times to clear all BT bonds - for left-half-only access
+        bt_clr_tap5: bt_clr_tap5 {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <300>;
+            bindings = <&none>, <&none>, <&none>, <&none>, <&bt BT_CLR_ALL>;
+        };
     };
 
     conditional_layers {
@@ -58,7 +66,7 @@
             // | SHFT |  A  |  S  |  D  |  F  |  G  |            |  H  |  J  |  K  |  L  |  ;  |  á   |
             // | CTRL |  Z  |  X  |  C  |  V  |  B  |            |  N  |  M  |  ,  |  .  |  /  |  \   |
             //                    |  [  |  ]  |                              |  +  |  =  |
-            //                          |RAISE| SPC |            |ENTER|LOWER|
+            //                          | LEFT| SPC |            |ENTER|RIGHT|
             //                          |LGUI | DEL |            |PGUP |PGDN |
             //                          |BSPC |LALT |            |HOME | END |
 
@@ -74,24 +82,23 @@
             >;
         };
 
-        lower {
-            display-name = "Lower";
+        right {
+            display-name = "Right";
             // -----------------------------------------------------------------------------------------
             // |  `   |     |     |     |     |     |            | F20 | F21 |     |     |     | DEL  |
             // |      |     |     |     |     |     |            |     |     |  UP |     |     |  +   |
             // |      |     |     |     |     |     |            |     | LFT | DWN | RGT |  -  |  '   |
-            // |BTCLR*|     |     |     |     |STUL*|            |BOOT |     |     |     |  =  |  _   |
+            // |      |     |     |     |     |     |            |BOOT |     |     |     |  =  |  _   |
             //                    |     |  ç  |                              |     |     |
             //                          |PSCR |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
-            // *BTCLR = BT Clear All (hold 5s), BOOT = Bootloader
 
             bindings = <
             &kp GRAVE  &trans    &trans    &trans    &trans    &trans                          &kp F20         &kp F21   &trans     &trans     &trans    &kp DEL
             &trans     &trans    &trans    &trans    &trans    &trans                          &trans          &trans    &kp UP     &trans     &trans    &kp PLUS
             &trans     &trans    &trans    &trans    &trans    &trans                          &trans          &kp LEFT  &kp DOWN   &kp RIGHT  &kp MINUS &kp SQT
-            &bt_clr_hold 0 0  &trans  &trans  &trans  &trans  &none                           &bootloader     &trans    &trans     &trans     &kp EQUAL &kp UNDER
+            &trans     &trans    &trans    &trans    &trans    &trans                          &bootloader     &trans    &trans     &trans     &kp EQUAL &kp UNDER
                                            &trans    &kp RA(COMMA)                                                       &trans     &trans
                                                      &kp PSCRN &trans                                 &trans       &trans
                                                      &trans    &trans                                 &trans       &trans
@@ -99,23 +106,24 @@
             >;
         };
 
-        raise {
-            display-name = "Raise";
+        left {
+            display-name = "Left";
             // -----------------------------------------------------------------------------------------
             // |  `   | F1  | F2  | F3  | F4  | F5  |            | F6  | F7  | F8  | F9  | F10 | F11  |
             // |      |     |     |  UP |     |     |            |     |     |     |     | F12 |VOL_UP|
             // |      |     | LFT | DWN | RGT |     |            |     |PREV |PLAY |NEXT |     |VOL_DN|
-            // |      |     |     |     |     |BOOT |            |BOOT |     |     |     |  ñ  |      |
+            // |      |BTCLR*|    |     |     |BOOT |            |BOOT |     |     |     |  ñ  |      |
             //                    |  {  |  }  |                              |  `  |  ~  |
             //                          |     |     |            |     |     |
             //                          |     |     |            |     |     |
             //                          |     |MUTE |            |MUTE |     |
+            // *BTCLR = BT Clear All (tap Z 5 times with left thumb while holding LEFT layer)
 
             bindings = <
             &kp GRAVE  &kp F1 &kp F2   &kp F3   &kp F4    &kp F5                      &kp F6      &kp F7     &kp F8    &kp F9     &kp F10       &kp F11
             &trans     &trans &trans   &kp UP   &trans    &trans                      &trans     &trans    &trans     &trans   &kp F12  &kp C_VOL_UP
             &trans     &trans &kp LEFT &kp DOWN &kp RIGHT &trans                      &trans      &kp C_PREV &kp C_PP  &kp C_NEXT &trans        &kp C_VOL_DN
-            &trans     &trans &trans   &trans   &trans    &bootloader                 &bootloader &trans     &trans    &trans     &kp RA(COMMA) &trans
+            &trans     &bt_clr_tap5 &trans   &trans   &trans    &bootloader                 &bootloader &trans     &trans    &trans     &kp RA(COMMA) &trans
                                                 &kp LBRC  &kp RBRC                                            &kp GRAVE  &kp TILDE
                                                          &trans      &trans                      &trans       &trans
                                                          &trans      &trans                      &trans       &trans
@@ -126,6 +134,7 @@
         adjust {
             display-name = "Adjust";
             // -----------------------------------------------------------------------------------------
+            // Activated when both LEFT and RIGHT layers are held simultaneously
             // |BT_CLR| BT1  | BT2  | BT3  | BT4  | BT5  |            |     |     |     |     |     |      |
             // |      |      |      |      |      |BTNXT |            |     |     |     |     |     |      |
             // |OUTTOG|      |      |      |      |BTPRV |            |     |     |     |     |     |      |
